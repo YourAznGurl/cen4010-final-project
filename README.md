@@ -1,7 +1,7 @@
 # MatterTrace
 
 AI-assisted case timelines for a personal-injury law office. This is the
-Final Project prototype for CEN 4010 (Principles of Software Engineering),
+Final Project prototype for CEN 4010,
 continuing the project defined in Assignment 1 and designed in Assignment 2.
 
 **Repository:** _add your GitHub URL here after you push_

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ case.title }} <span class="muted">({{ case.case_id }})</span></h1>
+
+{% if approved %}
+  <div class="approved-banner">Approved by attorney</div>
+{% else %}
+  <div class="draft-banner">Draft - not approved by attorney</div>
+{% endif %}
+
+<p>
+  <a class="btn btn-secondary" href="{{ url_for('attorney_queue', case_id=case.case_id) }}">Attorney Queue ({{ escalated|length }})</a>
+  <a class="btn btn-secondary" href="{{ url_for('export_timeline', case_id=case.case_id) }}">Export Timeline</a>
+  {% if current_role == 'attorney' or current_role == 'administrator' %}
+  <form class="inline" method="post" action="{{ url_for('approve_case', case_id=case.case_id) }}">
+    <button class="btn" type="submit">Approve Timeline</button>
+  </form>
+  {% endif %}
+</p>
+
+<h2>Documents</h2>
+<table>
+  <tr><th>Doc</th><th>Uploaded by</th><th>Status</th></tr>
+  {% for d in docs %}
+  <tr>
+    <td>{{ d.filename }}</td>
+    <td>{{ d.uploaded_by }}</td>
+    <td>
+      {% if d.is_duplicate %}<span class="label label-mismatch">Duplicate - not processed</span>{% endif %}
+      {% if not d.readable %}<span class="label label-mismatch">Unreadable - needs a person</span>{% endif %}
+      {% if not d.is_duplicate and d.readable %}Processed{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<details>
+  <summary class="btn btn-secondary" style="cursor:pointer;">+ Upload a document</summary>
+  <form method="post" action="{{ url_for('upload_doc', case_id=case.case_id) }}">
+    <label>Filename (include "client"/"intake" for client-reported docs)</label>
+    <input type="text" name="filename" placeholder="e.g. medical_record_1.txt" required>
+    <label>Document text</label>
+    <textarea name="text" rows="5" placeholder="Paste document text. Include $ amounts and dates like 03/14/2025."></textarea>
+    <label><input type="checkbox" name="unreadable"> Simulate: this document is unreadable (bad scan)</label>
+    <br><br>
+    <button class="btn" type="submit">Upload &amp; Process</button>
+  </form>
+</details>
+
+<h2>Suggested entries ({{ suggested|length }}) - awaiting paralegal review</h2>
+{% for e in suggested %}
+<div class="card">
+  <span class="label {{ 'label-client' if e.label == 'Client said' else 'label-doc' }}">{{ e.label }}</span>
+  <p><strong>{{ e.date or 'no date' }}</strong> &mdash; {{ e.description }}</p>
+  <p class="muted">Parties: {{ e.parties }} | Amount: {{ e.amount or '-' }} | Source: {{ e.source_doc_id }}</p>
+  <form method="post" action="{{ url_for('review_entry', entry_id=e.entry_id) }}">
+    <input type="hidden" name="case_id" value="{{ case.case_id }}">
+    <input type="text" name="description" value="{{ e.description }}">
+    <input type="text" name="date" value="{{ e.date or '' }}" placeholder="date">
+    <input type="text" name="parties" value="{{ e.parties }}" placeholder="parties">
+    <input type="text" name="amount" value="{{ e.amount or '' }}" placeholder="amount">
+    <button class="btn" name="action" value="approve">Approve</button>
+    <button class="btn btn-secondary" name="action" value="fix">Fix &amp; Approve</button>
+    <button class="btn btn-secondary" name="action" value="mark_unclear">Mark Unclear</button>
+    <button class="btn btn-danger" name="action" value="reject">Reject</button>
+  </form>
+</div>
+{% else %}
+<p class="muted">No suggestions pending.</p>
+{% endfor %}
+
+<h2>Checked entries ({{ checked|length }})</h2>
+<table>
+  <tr><th>Date</th><th>Description</th><th>Label</th><th>Reviewed by</th></tr>
+  {% for e in checked %}
+  <tr>
+    <td>{{ e.date or '-' }}</td>
+    <td>{{ e.description }}</td>
+    <td><span class="label label-checked">{{ e.label }}</span></td>
+    <td>{{ e.reviewed_by }} <span class="muted">{{ e.reviewed_at }}</span></td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Missing records mentioned ({{ missing|length }})</h2>
+<ul>
+  {% for m in missing %}
+  <li>{{ m.description }} <span class="muted">(mentioned in {{ m.mentioned_in_doc }})</span></li>
+  {% else %}
+  <li class="muted">None found.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

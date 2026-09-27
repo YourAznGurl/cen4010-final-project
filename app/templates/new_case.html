@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>New Case</h1>
+<form method="post">
+  <label>Case title</label>
+  <input type="text" name="title" required>
+  <label>Assign staff (who may access this case - NFR-01)</label>
+  <select name="assigned_users" multiple size="4">
+    {% for u in users %}
+      <option value="{{ u.username }}">{{ u.username }} ({{ u.role }})</option>
+    {% endfor %}
+  </select>
+  <br><br>
+  <button class="btn" type="submit">Create Case</button>
+</form>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Exported Timeline - {{ case.title }}</h1>
+<h2>{{ report.status }}</h2>
+
+<h3>Label key</h3>
+<ul>
+  {% for label, meaning in report.label_key.items() %}
+  <li><strong>{{ label }}</strong>: {{ meaning }}</li>
+  {% endfor %}
+</ul>
+
+<table>
+  <tr><th>Date</th><th>Description</th><th>Parties</th><th>Amount</th><th>Label</th><th>Source</th></tr>
+  {% for e in report.entries %}
+  <tr>
+    <td>{{ e.date or '-' }}</td>
+    <td>{{ e.description }}</td>
+    <td>{{ e.parties }}</td>
+    <td>{{ e.amount or '-' }}</td>
+    <td>{{ e.label }}</td>
+    <td>{{ e.source_doc_id }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h3>Unresolved / missing records</h3>
+<ul>
+  {% for m in report.missing_records %}
+  <li>{{ m.description }}</li>
+  {% else %}
+  <li class="muted">None.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

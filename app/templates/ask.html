@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Ask MatterTrace</h1>
+<p class="muted">Demonstrates FR-12: the tool refuses legal advice, valuation, strategy, or negotiation questions and points to the attorney.</p>
+<form method="post">
+  <input type="text" name="question" placeholder="e.g. What is this case worth?" required>
+  <button class="btn" type="submit">Ask</button>
+</form>
+{% if answer %}
+<div class="card">{{ answer }}</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Activity Log</h1>
+<p class="muted">Every upload, suggestion, change, escalation, and approval, with before/after (NFR-10).</p>
+<table>
+  <tr><th>Time</th><th>Actor</th><th>Action</th><th>Target</th><th>Before</th><th>After</th></tr>
+  {% for l in log %}
+  <tr>
+    <td>{{ l.timestamp }}</td>
+    <td>{{ l.actor }}</td>
+    <td>{{ l.action }}</td>
+    <td>{{ l.target }}</td>
+    <td class="muted">{{ l.before or '' }}</td>
+    <td class="muted">{{ l.after or '' }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

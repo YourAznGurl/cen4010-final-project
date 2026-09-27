@@ -156,7 +156,7 @@ pytest tests/ -v
 The suite (`tests/test_mattertrace.py`) has one or more tests per FR/NFR
 listed in section 2, run directly against the store's control logic
 (independent of the Flask HTTP layer, so failures point straight to the
-business rule that broke). All 30 tests were passing at time of submission.
+business rule that broke). All 32 tests were passing at time of submission.
 
 ## 8. Known limitations
 

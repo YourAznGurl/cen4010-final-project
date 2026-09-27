@@ -50,7 +50,7 @@
 <h2>Suggested entries ({{ suggested|length }}) - awaiting paralegal review</h2>
 {% for e in suggested %}
 <div class="card">
-  <span class="label {{ 'label-client' if e.label == 'Client said' else 'label-doc' }}">{{ e.label }}</span>
+  <span class="label {{ 'label-client' if e.label == 'Client said' else 'label-mismatch' if e.label == 'Mismatch or unclear' else 'label-doc' }}">{{ e.label }}</span>
   <p><strong>{{ e.date or 'no date' }}</strong> &mdash; {{ e.description }}</p>
   <p class="muted">Parties: {{ e.parties }} | Amount: {{ e.amount or '-' }} | Source: {{ e.source_doc_id }}</p>
   <form method="post" action="{{ url_for('review_entry', entry_id=e.entry_id) }}">

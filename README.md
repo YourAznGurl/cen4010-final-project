@@ -87,8 +87,8 @@ tests/
 
 No API keys, no external services, no cost. The AI Extraction Service is a
 deterministic rule-based module (see `app/extraction.py`), not a live LLM
-call — documented as a design choice in section 4 there, with the swap point
-called out for anyone extending this into a real LLM-backed version later.
+call — a deliberate design choice explained in section 8. The swap point for
+a real LLM-backed version is described in section 10.
 
 ## 5. Setup and run
 
@@ -205,11 +205,16 @@ Assignments 1 and 2. Specifically:
   `store.py`, `main.py`), the mocked rule-based extraction approach, and the
   Flask routes/templates, based on the architecture and requirements from
   Assignment 2.
-- Claude wrote the initial extraction logic, then two defects were found
-  through direct testing and corrected: (1) a false-positive mismatch caused
-  by comparing free-text "parties" heuristically, removed in favor of
-  amount-only comparison; (2) missing-record descriptions were truncated by
-  the original regex capture group, fixed to report the full sentence.
+- Claude wrote the initial extraction logic. Five defects were then found
+  by running the application and corrected: (1) false-positive mismatches
+  caused by comparing free-text "parties", removed in favor of amount-only
+  comparison; (2) sentence-initial words like "On" and "The" shown as
+  parties, fixed with a stop-word filter that falls back to "Unknown";
+  (3) missing-record descriptions truncated by the original regex capture
+  group, fixed to report the full sentence; (4) "Dr." treated as a sentence
+  boundary, fixed by masking common abbreviations; (5) "Mismatch or unclear"
+  entries shown with the wrong (green) badge color in the Review Workbench,
+  fixed in the template.
 - Every control point (FR-01 through FR-12, relevant NFRs) was verified two
   ways: automated pytest tests against the store logic, and manual end-to-end
   HTTP testing (login → upload → review → escalate → attorney-resolve →

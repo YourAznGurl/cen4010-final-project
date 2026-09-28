@@ -1,10 +1,10 @@
 # MatterTrace
 
 AI-assisted case timelines for a personal-injury law office. This is the
-Final Project prototype for CEN 4010,
+Final Project prototype for CEN 4010 (Principles of Software Engineering),
 continuing the project defined in Assignment 1 and designed in Assignment 2.
 
-**Repository:** (https://github.com/YourAznGurl/cen4010-final-project)
+**Repository:** https://github.com/YourAznGurl/cen4010-final-project
 
 ## 1. Problem, in one paragraph
 
@@ -98,7 +98,7 @@ python3 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-python -m app.main
+python3 -m app.main
 ```
 
 Open **http://127.0.0.1:5000** in a browser. A demo case ("Doe v. Acme

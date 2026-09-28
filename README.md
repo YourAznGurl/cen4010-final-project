@@ -42,10 +42,10 @@ MatterTrace's core value proposition.
 - NFR-10 — full activity log (upload, suggestion, review, escalation, approval) with before/after
 - NFR-12 — unreadable documents are flagged for a person; nothing is guessed
 
-**Explicitly out of scope for this prototype** (see Limitations, section 7):
+**Explicitly out of scope for this prototype** (see Known limitations, section 8):
 - FR-11 (re-flagging earlier entries when a new document contradicts them)
 - Real authentication (login is a role-picker, not a password system)
-- A real LLM call (the AI Extraction Service is a deterministic, rule-based mock — see section 4)
+- A real LLM call (the AI Extraction Service is a deterministic, rule-based mock — see section 8)
 - A persistent database (all data is in-memory and resets when the app restarts)
 
 ## 3. Architecture summary
@@ -113,6 +113,13 @@ to demonstrate each role:
 | pat_paralegal | paralegal |
 | alex_attorney | attorney |
 | sam_admin | administrator |
+
+### Data and access boundaries
+
+- **All data is synthetic.** The demo case ("Doe v. Acme Trucking Co.") and every document in it were invented for this course project. Nothing describes a real person, client, or law office.
+- **Do not add real client data.** This prototype is not built for confidential information: it has no real authentication, no encryption, and no reviewed data-handling terms for any AI service (NFR-03). Use only sample or authorized data.
+- **No credentials or keys.** The prototype uses no API keys, secrets, or external services, and none belong in this repository.
+- **Access model.** Four seeded roles (intake, paralegal, attorney, administrator) are chosen from a dropdown. The code enforces what each role can do (for example, paralegals cannot approve a timeline, and only staff assigned to a case can open it), but a role-picker is a demonstration of access control, not real authentication.
 
 ## 6. Demonstration path (normal and exception cases)
 

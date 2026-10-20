@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Attorney Queue - {{ case.title }}</h1>
+<p class="muted">Risky items only: mismatches, court/deadline mentions, or anything a paralegal marked unclear. Only an attorney may resolve these (FR-09).</p>
+
+{% if current_role not in ['attorney', 'administrator'] %}
+  <div class="flash flash-error">Only an attorney can view and resolve this queue. This page would normally be blocked for your role.</div>
+{% else %}
+  {% for e in queue %}
+  <div class="card">
+    <span class="label label-mismatch">{{ e.label }}</span>
+    <p><strong>{{ e.date or 'no date' }}</strong> &mdash; {{ e.description }}</p>
+    <p class="muted">Parties: {{ e.parties }} | Amount: {{ e.amount or '-' }} | Source: {{ e.source_doc_id }}
+      {% if e.mismatch_with %} | Conflicts with: {{ e.mismatch_with }}{% endif %}</p>
+    <form method="post" action="{{ url_for('attorney_resolve', entry_id=e.entry_id) }}">
+      <input type="hidden" name="case_id" value="{{ case.case_id }}">
+      <input type="text" name="description" value="{{ e.description }}">
+      <button class="btn" name="decision" value="approve">Resolve &amp; Approve</button>
+      <button class="btn btn-danger" name="decision" value="reject">Reject</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="muted">No escalated items. Timeline can be approved from the case page.</p>
+  {% endfor %}
+{% endif %}
+{% endblock %}

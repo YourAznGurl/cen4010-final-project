@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MatterTrace{% block title %}{% endblock %}</title>
+  <style>
+    body { font-family: -apple-system, Arial, sans-serif; max-width: 900px; margin: 30px auto; padding: 0 16px; color: #222; }
+    h1, h2, h3 { color: #1f2a44; }
+    nav { background: #1f2a44; padding: 10px 16px; border-radius: 6px; margin-bottom: 20px; }
+    nav a { color: #fff; margin-right: 16px; text-decoration: none; font-size: 14px; }
+    nav a:hover { text-decoration: underline; }
+    .user-badge { float: right; color: #cdd6e8; font-size: 13px; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; vertical-align: top; }
+    th { background: #f4f6fa; }
+    .label { padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+    .label-client { background: #e0ecff; color: #1a4fa0; }
+    .label-doc { background: #e6f4ea; color: #1a7a3c; }
+    .label-checked { background: #d7f5e3; color: #0e7a3f; border: 1px solid #0e7a3f; }
+    .label-mismatch { background: #ffe4e0; color: #b3261e; border: 1px solid #b3261e; }
+    .flash { padding: 10px 14px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
+    .flash-success { background: #e6f4ea; color: #1a7a3c; }
+    .flash-warning { background: #fff6e0; color: #8a6100; }
+    .flash-error { background: #ffe4e0; color: #b3261e; }
+    .btn { display: inline-block; padding: 5px 12px; border-radius: 5px; border: 1px solid #1f2a44; background: #1f2a44; color: #fff; cursor: pointer; font-size: 13px; text-decoration: none; }
+    .btn-secondary { background: #fff; color: #1f2a44; }
+    .btn-danger { background: #b3261e; border-color: #b3261e; }
+    .card { border: 1px solid #e2e6ee; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+    .muted { color: #777; font-size: 13px; }
+    .draft-banner { background: #fff6e0; border: 1px solid #e0c060; padding: 10px; border-radius: 6px; font-weight: 600; }
+    .approved-banner { background: #e6f4ea; border: 1px solid #1a7a3c; padding: 10px; border-radius: 6px; font-weight: 600; }
+    textarea, input[type=text] { width: 100%; padding: 6px; margin: 4px 0; box-sizing: border-box; }
+    form.inline { display: inline; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('index') }}">Cases</a>
+    <a href="{{ url_for('unassigned_docs') }}">Needs a Case</a>
+    <a href="{{ url_for('ask_question') }}">Ask MatterTrace</a>
+    <a href="{{ url_for('activity_log') }}">Activity Log</a>
+    <span class="user-badge">
+      {% if current_username %}
+        {{ current_username }} ({{ current_role }}) &middot; <a href="{{ url_for('logout') }}">Log out</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Log in</a>
+      {% endif %}
+    </span>
+  </nav>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Documents needing a case (FR-01)</h1>
+<p class="muted">A document is never processed until it is assigned to exactly one case.</p>
+{% for d in docs %}
+<div class="card">
+  <p><strong>{{ d.filename }}</strong> uploaded by {{ d.uploaded_by }}</p>
+  <p class="muted">{{ d.text[:150] }}...</p>
+  <form method="post" action="{{ url_for('assign_doc', doc_id=d.doc_id) }}">
+    <select name="case_id">
+      {% for c in cases %}
+      <option value="{{ c.case_id }}">{{ c.title }} ({{ c.case_id }})</option>
+      {% endfor %}
+    </select>
+    <button class="btn" type="submit">Assign case &amp; process</button>
+  </form>
+</div>
+{% else %}
+<p class="muted">No unassigned documents.</p>
+{% endfor %}
+{% endblock %}

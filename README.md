@@ -153,6 +153,8 @@ Assignment 2's Implementation Guidelines:
 11. **Visit "Activity Log"** — every action above appears with actor,
     timestamp, and before/after values (NFR-10).
 
+**Solution Design Report:** [mattertrace_solution_design_report.docx](./mattertrace_solution_design_report.docx)
+
 ## 7. Testing
 
 ```bash

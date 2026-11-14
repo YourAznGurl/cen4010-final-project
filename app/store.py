@@ -71,6 +71,12 @@ class Store:
             raise PermissionError_(f"'{username}' is not assigned to case {case_id}")
         return case
 
+    def invalidate_approval(self, case_id, actor):
+        if self.case_approved.get(case_id):
+            self.case_approved[case_id] = False
+            self.log(actor, "TIMELINE_APPROVAL_CLEARED", target=case_id,
+                     before="Approved", after="Draft")
+
     # ---------- cases ----------
     def create_case(self, title, assigned_users):
         case = Case(case_id=next_id("CASE"), title=title, assigned_users=assigned_users)
@@ -126,6 +132,7 @@ class Store:
             self.log(actor, "DOC_FLAGGED_UNREADABLE", target=doc_id)
             return []
 
+        self.invalidate_approval(doc.case_id, actor)
         new_entries = extraction.extract_entries(doc)
         for e in new_entries:
             self.entries[e.entry_id] = e
@@ -150,6 +157,7 @@ class Store:
         before = f"{entry.label} | {entry.description}"
 
         if extraction.is_risky(entry):
+            self.invalidate_approval(entry.case_id, actor)
             entry.status = "escalated"
             self.log(actor, "ENTRY_ESCALATED_ON_REVIEW", target=entry_id, before=before)
             return entry
@@ -173,6 +181,7 @@ class Store:
         else:
             raise ValueError(f"Unknown action: {action}")
 
+        self.invalidate_approval(entry.case_id, actor)
         entry.reviewed_by = actor
         entry.reviewed_at = now()
         after = f"{entry.label} | {entry.description}"
@@ -184,8 +193,14 @@ class Store:
         return [e for e in self.entries.values() if e.case_id == case_id and e.status == "escalated"]
 
     def attorney_resolve(self, entry_id, actor, decision, edits=None):
-        self.require_role(actor, ["attorney", "administrator"])
+        self.require_role(actor, ["attorney"])
         entry = self.entries[entry_id]
+        self.require_case_access(actor, entry.case_id)
+        if entry.status != "escalated":
+            raise ValueError("Only escalated entries can be resolved.")
+        if decision not in ("approve", "reject"):
+            raise ValueError("Choose approve or reject.")
+        self.invalidate_approval(entry.case_id, actor)
         before = f"{entry.label} | {entry.status}"
         if decision == "approve":
             if edits:
@@ -201,13 +216,14 @@ class Store:
         return entry
 
     def approve_timeline(self, case_id, actor):
-        """FR-09/C5: only an attorney (or admin) may approve. Refuses if
-        escalated items remain unresolved."""
-        self.require_role(actor, ["attorney", "administrator"])
+        """Approve only when the assigned attorney has a reviewed timeline."""
+        self.require_role(actor, ["attorney"])
         self.require_case_access(actor, case_id)
         pending = self.attorney_queue(case_id)
         if pending:
             raise ValueError(f"{len(pending)} escalated item(s) must be resolved before approval.")
+        if any(entry.status != "checked" for entry in self.exportable_entries(case_id)):
+            raise ValueError("Review every suggestion before approving the timeline.")
         self.case_approved[case_id] = True
         self.log(actor, "TIMELINE_APPROVED", target=case_id)
         return True
@@ -225,12 +241,20 @@ class Store:
         return any(kw in q for kw in self.LEGAL_ADVICE_KEYWORDS)
 
     # ---------- Report / export (FR-10) ----------
+    def exportable_entries(self, case_id):
+        return [
+            entry for entry in self.entries.values()
+            if entry.case_id == case_id and entry.status != "rejected"
+        ]
+
     def export_timeline(self, case_id):
         entries = sorted(
-            [e for e in self.entries.values() if e.case_id == case_id and e.status != "rejected"],
+            self.exportable_entries(case_id),
             key=lambda e: (e.date or "9999"),
         )
-        approved = self.case_approved.get(case_id, False)
+        approved = self.case_approved.get(case_id, False) and all(
+            entry.status == "checked" for entry in entries
+        )
         return {
             "case_id": case_id,
             "status": "Approved by attorney" if approved else "Draft - not approved by attorney",

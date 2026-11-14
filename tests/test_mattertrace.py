@@ -284,3 +284,23 @@ def test_court_deadline_mention_is_risky_and_escalates(store, case):
     assert len(entries) == 1
     result = store.review_entry(entries[0].entry_id, "pat_paralegal", "approve")
     assert result.status == "escalated"
+
+
+def test_approval_requires_assigned_attorney_and_checked_entries(store, case):
+    with pytest.raises(PermissionError_):
+        store.approve_timeline(case.case_id, "sam_admin")
+
+    doc = store.upload_document("test.txt", "On 03/10/2024, treatment began.",
+                                "dana_intake", case_id=case.case_id)
+    entry, = store.run_extraction(doc.doc_id, "dana_intake")
+    with pytest.raises(ValueError, match="Review every suggestion"):
+        store.approve_timeline(case.case_id, "alex_attorney")
+    store.review_entry(entry.entry_id, "pat_paralegal", "approve")
+    store.approve_timeline(case.case_id, "alex_attorney")
+    assert store.export_timeline(case.case_id)["status"] == "Approved by attorney"
+
+    new_doc = store.upload_document("followup.txt", "On 03/12/2024, treatment ended.",
+                                    "dana_intake", case_id=case.case_id)
+    store.run_extraction(new_doc.doc_id, "dana_intake")
+    assert store.case_approved[case.case_id] is False
+    assert store.export_timeline(case.case_id)["status"] == "Draft - not approved by attorney"

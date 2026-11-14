@@ -11,7 +11,7 @@
 <p>
   <a class="btn btn-secondary" href="{{ url_for('attorney_queue', case_id=case.case_id) }}">Attorney Queue ({{ escalated|length }})</a>
   <a class="btn btn-secondary" href="{{ url_for('export_timeline', case_id=case.case_id) }}">Export Timeline</a>
-  {% if current_role == 'attorney' or current_role == 'administrator' %}
+  {% if current_role == 'attorney' %}
   <form class="inline" method="post" action="{{ url_for('approve_case', case_id=case.case_id) }}">
     <button class="btn" type="submit">Approve Timeline</button>
   </form>

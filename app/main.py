@@ -137,7 +137,7 @@ def review_entry(entry_id):
 @app.route("/case/<case_id>/attorney")
 def attorney_queue(case_id):
     try:
-        store.require_role(current_user(), ["attorney", "administrator"])
+        store.require_role(current_user(), ["attorney"])
         store.require_case_access(current_user(), case_id)
     except PermissionError_ as e:
         flash(str(e), "error")
@@ -155,7 +155,7 @@ def attorney_resolve(entry_id):
     try:
         store.attorney_resolve(entry_id, current_user(), decision, edits=edits)
         flash("Item resolved by attorney.", "success")
-    except PermissionError_ as e:
+    except (PermissionError_, ValueError) as e:
         flash(str(e), "error")
     return redirect(url_for("attorney_queue", case_id=request.form["case_id"]))
 

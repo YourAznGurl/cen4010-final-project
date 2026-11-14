@@ -3,7 +3,7 @@
 <h1>Attorney Queue - {{ case.title }}</h1>
 <p class="muted">Risky items only: mismatches, court/deadline mentions, or anything a paralegal marked unclear. Only an attorney may resolve these (FR-09).</p>
 
-{% if current_role not in ['attorney', 'administrator'] %}
+{% if current_role != 'attorney' %}
   <div class="flash flash-error">Only an attorney can view and resolve this queue. This page would normally be blocked for your role.</div>
 {% else %}
   {% for e in queue %}

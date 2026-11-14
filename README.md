@@ -5,6 +5,7 @@ Final Project prototype for CEN 4010 (Principles of Software Engineering),
 continuing the project defined in Assignment 1 and designed in Assignment 2.
 
 **Repository:** https://github.com/YourAznGurl/cen4010-final-project
+**Solution Design Report:** [Solution_Design_Report.pdf](./Solution_Design_Report.pdf)
 
 ## 1. Problem, in one paragraph
 

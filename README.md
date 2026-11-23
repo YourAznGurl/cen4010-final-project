@@ -3,7 +3,7 @@
 MatterTrace is a CEN 4010 final project prototype for a personal-injury law office. Records arrive from different sources, and staff need to know where each timeline entry came from and who checked it. MatterTrace suggests entries from sample text, flags possible conflicts, and lets staff review the timeline before the assigned attorney approves it.
 
 - [GitHub repository](https://github.com/YourAznGurl/cen4010-final-project)
-- [Solution Design Report](./MatterTrace%20_%20CEN%204010%20Final%20Project%20Solution%20Design%20Report.pdf)
+- [MatterTrace PDF](https://github.com/YourAznGurl/cen4010-final-project/blob/main/MatterTrace.pdf)
 - [Final Presentation](./MatterTrace%20_%20CEN%204010%20Final%20Presentation.pdf)
 
 ## Demo
